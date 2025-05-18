@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { motion } from "framer-motion";
-import { Github, Linkedin, FileText, User, BookOpen, Award, GraduationCap, Languages, BookOpen as Publications, Briefcase } from "lucide-react";
+import { Github, Linkedin, FileText, User, BookOpen, Award, GraduationCap, Languages, BookOpen as Publications, Briefcase, ExternalLink, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInView } from "react-intersection-observer";
+import { Badge } from "@/components/ui/badge";
 
 const AboutSection = () => {
   const [activeTab, setActiveTab] = useState("profile");
