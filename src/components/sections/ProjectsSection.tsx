@@ -1,14 +1,12 @@
 
-import { useState, useRef, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Github, ExternalLink } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import ProjectCard from "@/components/projects/ProjectCard";
 import { projects } from "@/components/projects/projectData";
 
 const ProjectsSection = () => {
-  const [visibleProjects, setVisibleProjects] = useState(3);
+  const [visibleProjects, setVisibleProjects] = useState(6);
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -16,7 +14,7 @@ const ProjectsSection = () => {
   });
 
   const showMoreProjects = () => {
-    setVisibleProjects((prev) => Math.min(prev + 3, projects.length));
+    setVisibleProjects((prev) => Math.min(prev + 4, projects.length));
   };
 
   return (
@@ -30,7 +28,7 @@ const ProjectsSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {projects.slice(0, visibleProjects).map((project, index) => (
             <ProjectCard 
               key={project.id} 

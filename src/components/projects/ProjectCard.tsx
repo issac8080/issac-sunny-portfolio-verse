@@ -14,11 +14,10 @@ interface ProjectCardProps {
 }
 
 const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) => {
-  const isEven = index % 2 === 0;
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
-    delay: 100 * index,
+    delay: 100 * (index % 3), // Stagger the animations by row
   });
   
   return (
@@ -27,7 +26,7 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
       className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
     >
       <div 
-        className={`relative group h-full ${isEven ? "lg:ml-8" : "lg:mr-8"}`}
+        className="relative group h-full"
         onMouseEnter={() => onHover(project.id)}
         onMouseLeave={() => onHover(null)}
       >
@@ -37,22 +36,22 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
         >
           <div className="relative">
             <div
-              className="h-64 bg-cover bg-center transition-all duration-500 group-hover:scale-110"
+              className="h-48 bg-cover bg-center transition-all duration-500 group-hover:scale-110"
               style={{ backgroundImage: `url(${project.image})` }}
             ></div>
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent opacity-70"></div>
           </div>
           
-          <div className="p-8 pt-6">
-            <h3 className="text-xl font-bold mb-3 gradient-text">{project.title}</h3>
-            <p className="text-foreground/70 text-sm mb-6 line-clamp-3">{project.description}</p>
+          <div className="p-6 pt-5">
+            <h3 className="text-lg font-bold mb-2 gradient-text line-clamp-1">{project.title}</h3>
+            <p className="text-foreground/70 text-sm mb-4 line-clamp-3">{project.description}</p>
             
-            <div className="space-y-6">
-              <div className="flex flex-wrap gap-2 mb-4">
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-1.5 mb-4 max-h-16 overflow-hidden">
                 {project.tech.map((tech) => (
                   <span 
                     key={tech} 
-                    className="tech-pill bg-secondary/50 hover:bg-primary/30 transition-all duration-300"
+                    className="tech-pill text-xs px-2 py-0.5 bg-secondary/50 hover:bg-primary/30 transition-all duration-300"
                   >
                     {tech}
                   </span>
@@ -64,21 +63,23 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
                   <Button 
                     asChild 
                     variant="outline" 
+                    size="sm"
                     className="rounded-full hover:bg-primary/20 transition-all duration-300"
                   >
                     <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-2 h-4 w-4" /> Code
+                      <Github className="mr-1.5 h-3.5 w-3.5" /> Code
                     </a>
                   </Button>
                 )}
                 {project.liveUrl && (
                   <Button 
                     asChild 
-                    variant="outline" 
+                    variant="outline"
+                    size="sm" 
                     className="rounded-full hover:bg-accent/20 transition-all duration-300"
                   >
                     <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Live Demo
                     </a>
                   </Button>
                 )}
@@ -114,10 +115,6 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
           </div>
         </Card>
       </div>
-      
-      {/* Decorative elements */}
-      <div className={`hidden lg:block absolute ${isEven ? "-left-2" : "-right-2"} top-1/2 w-4 h-4 bg-primary/30 rounded-full blur-sm animate-pulse-slow`}></div>
-      <div className={`hidden lg:block absolute ${isEven ? "-left-6" : "-right-6"} top-1/4 w-2 h-2 bg-accent/50 rounded-full blur-sm animate-float`}></div>
     </div>
   );
 };
