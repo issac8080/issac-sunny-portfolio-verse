@@ -108,6 +108,36 @@
   .project-card:hover h3 {
     @apply text-primary;
   }
+
+  /* New glossy effect for cards */
+  .glossy-card {
+    @apply bg-gradient-to-br from-white/5 to-transparent backdrop-blur-md border border-white/10 shadow-lg;
+  }
+  
+  /* New button styles */
+  .button-glow {
+    @apply relative overflow-hidden shadow-md;
+  }
+  
+  .button-glow::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary/0 via-white/20 to-primary/0 -translate-x-full;
+    transition: transform 0.6s ease;
+  }
+  
+  .button-glow:hover::after {
+    transform: translateX(100%);
+  }
+
+  /* New glitch effect for tech texts */
+  .text-glitch {
+    position: relative;
+    animation: glitch 5s infinite;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
 }
 
 .particles-container {
@@ -251,4 +281,37 @@
 .custom-cursor {
   @apply fixed w-8 h-8 rounded-full bg-gradient-to-r from-primary/30 to-accent/30 pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 mix-blend-difference;
   transition: transform 0.1s ease;
+}
+
+/* New animation for glitch effect */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  1% { transform: translate(-2px, 2px); }
+  2% { transform: translate(2px, -2px); }
+  3% { transform: translate(0); }
+  100% { transform: translate(0); }
+}
+
+/* Enhanced card flip effect */
+.card-flip {
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card-flip:hover {
+  transform: rotateY(10deg);
+}
+
+/* Interactive badges */
+.interactive-badge {
+  @apply px-2 py-1 rounded-full text-xs transition-all duration-300;
+  background: linear-gradient(45deg, var(--primary), var(--accent));
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, Code, Star, Trophy, Bookmark } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { Project } from "./projectData";
 
@@ -13,12 +13,32 @@ interface ProjectCardProps {
   onHover: (id: number | null) => void;
 }
 
+const getProjectIcon = (category: string) => {
+  switch (category?.toLowerCase()) {
+    case "ai":
+    case "machine learning":
+      return <Code className="text-blue-400" />;
+    case "web":
+    case "website":
+      return <ExternalLink className="text-green-400" />;
+    case "mobile":
+      return <Star className="text-yellow-400" />;
+    case "iot":
+      return <Trophy className="text-purple-400" />;
+    default:
+      return <Bookmark className="text-primary" />;
+  }
+};
+
 const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
     delay: 100 * (index % 3), // Stagger the animations by row
   });
+  
+  const category = project.tech[0] || "";
   
   return (
     <div 
@@ -26,18 +46,34 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
       className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
     >
       <div 
-        className="relative group h-full"
-        onMouseEnter={() => onHover(project.id)}
-        onMouseLeave={() => onHover(null)}
+        className="relative group h-full perspective-1000"
+        onMouseEnter={() => {
+          onHover(project.id);
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          onHover(null);
+          setIsHovered(false);
+        }}
       >
-        <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 opacity-60 group-hover:opacity-100 blur transition-all duration-500"></div>
+        <div className={`absolute -inset-0.5 rounded-lg bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 opacity-60 group-hover:opacity-100 blur transition-all duration-500 ${isHovered ? 'animate-glow' : ''}`}></div>
         <Card 
-          className="project-card relative h-full bg-background/70 backdrop-blur-sm border-muted overflow-hidden group-hover:border-primary/50 transition-all duration-500"
+          className="project-card relative h-full bg-background/70 backdrop-blur-sm border-muted overflow-hidden group-hover:border-primary/50 transition-all duration-500 hover:shadow-lg hover:shadow-primary/20"
         >
+          <div className="absolute top-4 right-4 z-20">
+            <div className="bg-background/80 backdrop-blur-sm p-1.5 rounded-full border border-white/10">
+              {getProjectIcon(category)}
+            </div>
+          </div>
+          
           <div className="relative">
             <div
               className="h-48 bg-cover bg-center transition-all duration-500 group-hover:scale-110"
-              style={{ backgroundImage: `url(${project.image})` }}
+              style={{ 
+                backgroundImage: `url(${project.image})`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover'
+              }}
             ></div>
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent opacity-70"></div>
           </div>
@@ -93,7 +129,7 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
                 {project.githubUrl && (
                   <a 
                     href={project.githubUrl}
-                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/20 transition-all duration-300"
+                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/20 transition-all duration-300 shadow-lg"
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -103,7 +139,7 @@ const ProjectCard = ({ project, index, isActive, onHover }: ProjectCardProps) =>
                 {project.liveUrl && (
                   <a 
                     href={project.liveUrl}
-                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent/20 transition-all duration-300"
+                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent/20 transition-all duration-300 shadow-lg"
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
