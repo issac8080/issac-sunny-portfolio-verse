@@ -83,11 +83,22 @@
   }
   
   .tech-pill {
-    @apply px-3 py-1 rounded-full bg-secondary text-xs font-medium;
+    @apply px-3 py-1 rounded-full bg-secondary text-xs font-medium transition-all duration-300 hover:scale-110 hover:text-primary;
   }
 
   .link-underline {
     @apply relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full;
+  }
+  
+  /* New project card styling */
+  .project-card {
+    @apply relative overflow-hidden transition-all duration-500 hover:transform hover:-translate-y-2;
+  }
+  
+  .project-card::before {
+    content: '';
+    @apply absolute -inset-0.5 rounded-lg bg-gradient-to-r from-primary/0 via-primary/30 to-accent/0 opacity-0 blur transition-all duration-500 group-hover:opacity-100;
+    z-index: -1;
   }
 }
 
@@ -123,6 +134,18 @@
   50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
 }
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50% { border-radius: 50% 60% 30% 60% / 40% 50% 60% 40%; }
+  75% { border-radius: 60% 40% 60% 30% / 60% 40% 60% 40%; }
+}
+
 /* Animation classes */
 .animate-float {
   animation: float 6s ease-in-out infinite;
@@ -136,9 +159,26 @@
   animation: glow 3s ease-in-out infinite;
 }
 
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+.animate-morph {
+  animation: morph 8s ease-in-out infinite;
+}
+
 /* Skill hover effects */
 .skill-item:hover {
   z-index: 10;
+}
+
+/* Project card hover effects */
+.project-card .tech-pill {
+  transition: all 0.3s ease;
+}
+
+.project-card:hover .tech-pill {
+  background-color: rgba(139, 92, 246, 0.2);
 }
 
 /* Improved scrollbar */
@@ -165,4 +205,10 @@
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+/* Custom cursor (optional) */
+.custom-cursor {
+  @apply fixed w-8 h-8 rounded-full bg-gradient-to-r from-primary/30 to-accent/30 pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 mix-blend-difference;
+  transition: transform 0.1s ease;
 }
