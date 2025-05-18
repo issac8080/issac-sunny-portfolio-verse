@@ -1,7 +1,12 @@
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Briefcase, ChevronDown, Calendar, MapPin, ExternalLink, Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useInView } from "react-intersection-observer";
 
 type Experience = {
   id: number;
@@ -11,6 +16,7 @@ type Experience = {
   location: string;
   description: string[];
   technologies: string[];
+  logo?: string;
 };
 
 const experiences: Experience[] = [
@@ -104,80 +110,144 @@ const experiences: Experience[] = [
 ];
 
 const ExperienceSection = () => {
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(3);
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const toggleExpand = (id: number) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  const showMore = () => {
+    setVisibleCount(prev => Math.min(prev + 3, experiences.length));
+  };
+
   return (
-    <section id="experience" className="relative bg-secondary/30 py-20">
+    <section id="experience" className="relative py-24 overflow-hidden">
       <div className="container-custom relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="heading-lg gradient-text mb-4">Experience</h2>
-          <div className="w-24 h-1 bg-primary mx-auto mb-6 rounded-full"></div>
+        <div 
+          ref={ref}
+          className={`text-center mb-16 transition-all duration-1000 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        >
+          <div className="inline-flex items-center justify-center gap-2 mb-2">
+            <div className="h-0.5 w-6 bg-primary"></div>
+            <h2 className="text-sm font-medium uppercase tracking-wider text-primary">Career Path</h2>
+            <div className="h-0.5 w-6 bg-primary"></div>
+          </div>
+          <h2 className="heading-lg gradient-text mb-4 flex items-center justify-center gap-2">
+            <Briefcase className="h-6 w-6 text-primary" />
+            Professional Experience
+          </h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary/40 via-primary to-accent/40 mx-auto mb-6 rounded-full animate-pulse-slow"></div>
           <p className="text-foreground/70 max-w-3xl mx-auto">
-            My professional journey in the tech industry, showcasing internships and leadership roles I've taken on.
+            My professional journey in the tech industry, showcasing internships and leadership roles that have shaped my expertise.
           </p>
         </div>
 
-        <div className="space-y-8">
-          {experiences.map((exp, index) => (
-            <Card 
+        {/* Timeline style experience layout */}
+        <div className="relative">
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-primary/10 via-primary/50 to-primary/10 rounded-full hidden md:block"></div>
+          
+          {experiences.slice(0, visibleCount).map((exp, index) => (
+            <motion.div
               key={exp.id}
-              className={`bg-background/50 backdrop-blur-sm border-muted card-hover relative overflow-hidden ${
-                index % 2 === 0 ? 'border-l-4 border-l-primary' : 'border-r-4 border-r-accent'
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className={`mb-8 flex flex-col md:flex-row items-start relative ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
             >
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  <div className="lg:col-span-1">
-                    <p className="text-primary font-semibold">{exp.period}</p>
-                    <p className="text-sm text-foreground/70">{exp.location}</p>
-                    
-                    <HoverCard>
-                      <HoverCardTrigger asChild>
-                        <Badge variant="outline" className="mt-2 cursor-pointer">
-                          Details
-                        </Badge>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="w-80">
-                        <div className="space-y-2">
-                          <p className="text-sm font-medium">Role highlights:</p>
-                          <ul className="text-xs list-disc pl-4 space-y-1">
-                            {exp.description.map((desc, i) => (
-                              <li key={i}>{desc}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  </div>
-                  
-                  <div className="lg:col-span-3">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <h3 className="text-xl font-bold mb-1">{exp.position}</h3>
-                      <p className="text-foreground/80 mb-4 md:mb-0">{exp.company}</p>
+              {/* Timeline node */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-0 w-4 h-4 rounded-full bg-primary hidden md:block z-10">
+                <div className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75"></div>
+              </div>
+              
+              {/* Card */}
+              <div className={`w-full md:w-[calc(50%-20px)] ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'}`}>
+                <Card 
+                  className={`bg-background/50 backdrop-blur-sm border-muted card-hover relative overflow-hidden group transition-all duration-300 ${
+                    expandedId === exp.id ? 'shadow-lg shadow-primary/10' : ''
+                  } ${
+                    index % 2 === 0 ? 'border-r-4 border-r-primary' : 'border-l-4 border-l-accent'
+                  }`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors">{exp.position}</h3>
+                        <p className="text-foreground/80">{exp.company}</p>
+                      </div>
+                      <Badge variant="outline" className="text-xs animate-pulse-slow">
+                        {exp.period.split(' - ')[0]}
+                      </Badge>
                     </div>
                     
-                    <ul className="list-disc list-inside space-y-2 mb-4 text-foreground/70">
-                      {exp.description.slice(0, 1).map((item, idx) => (
-                        <li key={idx} className="line-clamp-2">{item}</li>
-                      ))}
-                    </ul>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      {exp.technologies.map((tech) => (
-                        <span key={tech} className="tech-pill">
-                          {tech}
-                        </span>
-                      ))}
+                    <div className="flex items-center text-sm text-foreground/60 mb-4">
+                      <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                      <span className="mr-4">{exp.period}</span>
+                      <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                      <span>{exp.location}</span>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    
+                    <div className={`transition-all duration-500 overflow-hidden ${
+                      expandedId === exp.id ? 'max-h-96' : 'max-h-12'
+                    }`}>
+                      <ul className="list-disc list-inside space-y-2 mb-4 text-foreground/70">
+                        {exp.description.map((item, idx) => (
+                          <li key={idx} className={expandedId !== exp.id && idx > 0 ? 'hidden' : ''}>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                      
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {exp.technologies.map((tech) => (
+                          <span key={tech} className="tech-pill text-xs group-hover:bg-primary/10">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="mt-4 w-full flex items-center justify-center text-primary/80 hover:text-primary hover:bg-primary/5"
+                      onClick={() => toggleExpand(exp.id)}
+                    >
+                      <span>{expandedId === exp.id ? 'Show Less' : 'Show More'}</span>
+                      <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${
+                        expandedId === exp.id ? 'rotate-180' : ''
+                      }`} />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
           ))}
         </div>
+        
+        {visibleCount < experiences.length && (
+          <div className="text-center mt-10">
+            <Button 
+              onClick={showMore}
+              variant="outline"
+              size="lg"
+              className="rounded-full bg-secondary/50 hover:bg-primary/20 border-primary/30 transition-all duration-300"
+            >
+              <span className="mr-2">View More Experiences</span>
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
       
-      {/* Background decorative elements */}
-      <div className="absolute top-40 left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-60 h-60 bg-accent/5 rounded-full blur-3xl"></div>
+      {/* Enhanced background decorative elements */}
+      <div className="absolute top-40 left-10 w-60 h-60 bg-primary/5 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute top-1/4 right-1/4 w-40 h-40 bg-primary/5 rounded-full blur-2xl animate-float"></div>
     </section>
   );
 };
